@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d62828">
+<title>Descarcă Flana Club</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:linear-gradient(160deg,#d62828,#a4161a);color:#fff;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;padding:24px}
+  .box{max-width:420px;width:100%;text-align:center}
+  .logo{width:84px;height:84px;border-radius:22px;background:rgba(255,255,255,.16);
+    display:grid;place-items:center;font-size:42px;font-weight:900;margin:0 auto 18px}
+  h1{font-size:28px;margin-bottom:8px}
+  .sub{opacity:.9;font-size:15px;margin-bottom:26px;line-height:1.5}
+  .perks{text-align:left;margin:0 auto 26px;max-width:300px}
+  .perk{display:flex;gap:12px;align-items:center;margin-bottom:12px;font-size:14.5px}
+  .perk .e{font-size:22px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    text-decoration:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;
+    margin-bottom:12px;background:#fff;color:#1f4fd6}
+  .btn.gold{background:#ffd23f;color:#3a2c00}
+  .store-btns{display:none}
+  .store-btns.show{display:block}
+  .note{font-size:12px;opacity:.75;margin-top:18px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">F</div>
+  <h1>Flana Club</h1>
+  <p class="sub">Cardul de fidelitate digital al magazinelor Flana. Strânge puncte, primește vouchere și vezi promoțiile zilei.</p>
+  <div class="perks">
+    <div class="perk"><span class="e">🎁</span> 50 puncte bonus la înscriere</div>
+    <div class="perk"><span class="e">🏷️</span> Promoțiile zilei pe telefon</div>
+    <div class="perk"><span class="e">💳</span> Card digital scanabil la casă</div>
+  </div>
+
+  <!-- MVP: deschide direct web-app-ul (PWA) -->
+  <a class="btn gold" href="index.html" id="open-app">📲 Deschide aplicația</a>
+
+  <!-- Faza 2: butoane store native (apar pe mobil) -->
+  <div class="store-btns" id="stores">
+    <a class="btn" href="#" id="ios">  Descarcă din App Store</a>
+    <a class="btn" href="#" id="android">▶ Descarcă din Google Play</a>
+  </div>
+
+  <p class="note" id="device-note">Se detectează dispozitivul...</p>
+</div>
+
+<script>
+/* Pagină intermediară inteligentă: detectează dispozitivul.
+   În faza MVP toate duc la PWA (index.html).
+   Înlocuiește linkurile #ios / #android cu URL-urile reale când lansezi aplicația nativă. */
+const ua = navigator.userAgent || '';
+const isiOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+const isAndroid = /android/i.test(ua);
+const note = document.getElementById('device-note');
+
+// URL-uri reale store (de completat la lansarea aplicației native):
+const IOS_URL = ''; // ex: https://apps.apple.com/app/idXXXXXXXX
+const ANDROID_URL = ''; // ex: https://play.google.com/store/apps/details?id=ro.flanamarket.club
+
+if(isiOS){
+  note.textContent = 'iPhone detectat — instalează aplicația din Safari (Partajează → Adaugă pe ecranul principal).';
+  if(IOS_URL){ document.getElementById('stores').classList.add('show'); document.getElementById('ios').href=IOS_URL; }
+}else if(isAndroid){
+  note.textContent = 'Android detectat — adaugă aplicația pe ecranul principal din meniul Chrome.';
+  if(ANDROID_URL){ document.getElementById('stores').classList.add('show'); document.getElementById('android').href=ANDROID_URL; }
+}else{
+  note.textContent = 'Scanează codul QR cu telefonul pentru a instala aplicația, sau apasă „Deschide aplicația".';
+}
+</script>
+</body>
+</html>

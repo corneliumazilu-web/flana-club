@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>Poster QR — Flana Club</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{--green:#d62828;--green2:#e63946;--gold:#ffd23f}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+  body{background:#e8ebe8;padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px}
+  .toolbar{max-width:148mm;width:100%;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .toolbar input{flex:1;min-width:200px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px}
+  .toolbar button{padding:10px 18px;border:none;border-radius:8px;background:var(--green);color:#fff;font-weight:700;cursor:pointer}
+  /* A5 poster - totul incadrat in chenarul rosu */
+  .poster{width:148mm;height:210mm;background:linear-gradient(160deg,var(--green),#a4161a);
+    color:#fff;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    padding:12mm 12mm 10mm;text-align:center;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+  .logo{width:20mm;height:20mm;border-radius:6mm;background:var(--green2);display:flex;align-items:center;justify-content:center;
+    font-size:13mm;font-weight:900;margin-bottom:3.5mm}
+  .poster h1{font-size:11mm;letter-spacing:.5px;margin-bottom:1.5mm;line-height:1}
+  .poster .tag{font-size:4.4mm;opacity:.92;margin-bottom:5mm;font-weight:500}
+  .qrcard{background:#fff;border:3px solid var(--gold);border-radius:5mm;padding:5mm;margin-bottom:5mm}
+  .qrcard #qr{display:flex;align-items:center;justify-content:center}
+  .cta{font-size:6mm;font-weight:800;margin-bottom:4.5mm;line-height:1.1}
+  .perks{text-align:left;width:100%;max-width:108mm}
+  .perk{display:flex;align-items:center;gap:3mm;font-size:4.3mm;line-height:1.3;margin-bottom:3mm}
+  .perk:last-child{margin-bottom:0}
+  .perk .pic{width:8mm;height:8mm;min-width:8mm;border-radius:2.4mm;background:rgba(255,255,255,.18);
+    display:flex;align-items:center;justify-content:center;font-size:4.4mm}
+  .perk b{color:var(--gold)}
+  .url{margin-top:auto;padding-top:5mm;font-size:4.6mm;font-weight:700;color:var(--gold)}
+  @media print{
+    body{background:#fff;padding:0;gap:0}
+    .toolbar{display:none}
+    .poster{box-shadow:none;border-radius:0;width:148mm;height:210mm}
+    @page{size:A5;margin:0}
+  }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <input id="url" value="https://app.flanamarket.ro" placeholder="URL aplicație (ex: https://app.flanamarket.ro)">
+    <button onclick="render()">Actualizează QR</button>
+    <button onclick="window.print()">🖨️ Tipărește / Salvează PDF</button>
+  </div>
+
+  <div class="poster">
+    <div class="logo">F</div>
+    <h1>FLANA CLUB</h1>
+    <div class="tag">Cardul tău de fidelitate din cartier</div>
+    <div class="qrcard"><div id="qr"></div></div>
+    <div class="cta">Scanează și instalează gratuit</div>
+    <div class="perks">
+      <div class="perk"><span class="pic">🎁</span><span><b>50 puncte</b> bonus la înscriere</span></div>
+      <div class="perk"><span class="pic">🏷️</span><span>Promoțiile zilei pe telefon</span></div>
+      <div class="perk"><span class="pic">💳</span><span>Vouchere din punctele tale</span></div>
+      <div class="perk"><span class="pic">🛒</span><span>Card digital, scanat la casă</span></div>
+      <div class="perk"><span class="pic">🎂</span><span><b>100 puncte</b> cadou de ziua ta</span></div>
+    </div>
+    <div class="url" id="urltext">app.flanamarket.ro</div>
+  </div>
+
+<script>
+function render(){
+  var url=document.getElementById('url').value.trim()||'https://app.flanamarket.ro';
+  document.getElementById('urltext').textContent=url.replace(/^https?:\/\//,'');
+  var el=document.getElementById('qr'); el.innerHTML='';
+  new QRCode(el,{text:url,width:200,height:200,colorDark:'#a4161a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "Flana Club",
+  "short_name": "Flana Club",
+  "description": "Cardul de fidelitate digital Flana Market - puncte, promoții și oferte exclusive.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#d62828",
+  "theme_color": "#d62828",
+  "lang": "ro",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

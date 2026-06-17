@@ -1,0 +1,36 @@
+FLANA CLUB — aplicație demo de fidelitate (versiune de test)
+============================================================
+
+CE ESTE
+Aplicație web (PWA) cu: card digital cu cod QR, puncte, promoțiile zilei,
+hartă magazine, vouchere și misiuni. Funcționează pe iPhone și Android.
+
+CUM O TESTEZI RAPID PE CALCULATOR
+  - Dă dublu-click pe „index.html" (se deschide în browser).
+  - La codul din SMS folosește: 1234  (cod demo).
+  - Apasă „Simulează scanare" pe ecranul Acasă ca să vezi cum cresc punctele.
+
+CUM O TRIMIȚI / O FOLOSEȘTI PE TELEFON
+  1. Intră pe https://app.netlify.com/drop
+  2. Trage TOT folderul „flana-club-app" în pagină.
+  3. Primești un link (ex. https://flana-club-xxxx.netlify.app) — trimite-l la testeri.
+  4. Pe telefon: deschizi linkul în browser →
+       • iPhone (Safari): Partajează → Adaugă pe ecranul principal
+       • Android (Chrome): meniul ⋮ → Adaugă pe ecranul principal / Instalează
+     (Pe iPhone apare automat și un mesaj cu acești pași.)
+
+ADMINISTRARE (opțional)
+  - „admin.html" = panou unde editezi promoțiile, magazinele și regulile de puncte.
+  - După modificări apeși „Exportă config.json" și pui fișierul lângă index.html.
+
+AFIȘ CU QR PENTRU MAGAZIN
+  - „poster-qr.html" = afiș A5 imprimabil. Pui linkul real de la Netlify și tipărești.
+
+DE REȚINUT
+  Aceasta este o versiune DEMO: punctele se salvează pe fiecare telefon în parte,
+  nu există conturi comune reale. E pentru testat experiența și pentru pilot.
+  Pentru lansarea reală (cont unic per client + acordare puncte la casă) e nevoie
+  de backend și integrare cu casa de marcat (vezi „Caiet de sarcini tehnic").
+
+Cod demo SMS: 1234
+Versiune: v5 (iunie 2026)

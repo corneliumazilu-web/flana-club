@@ -1,0 +1,35 @@
+{
+  "settings": { "welcomeBonus": 50, "profileBonus": 30, "pointsPerLeu": 1 },
+  "vouchers": [
+    { "id": "v7", "cost": 150, "value": "7 lei", "emoji": "7" },
+    { "id": "v15", "cost": 300, "value": "15 lei", "emoji": "15" },
+    { "id": "v30", "cost": 500, "value": "30 lei", "emoji": "30" }
+  ],
+  "promos": {
+    "azi": [
+      { "ic": "🥛", "n": "Lapte Zuzu 1.5% 1L", "d": "Oferta zilei • toate magazinele", "now": "4.99", "old": "6.49", "b": "" },
+      { "ic": "🍗", "n": "Piept de pui 1kg", "d": "Doar azi • stoc limitat", "now": "21.90", "old": "27.50", "b": "" },
+      { "ic": "☕", "n": "Cafea Jacobs 250g", "d": "Happy Hour 13:00–16:00 • puncte duble", "now": "17.49", "old": "21.99", "b": "hour" },
+      { "ic": "🍞", "n": "Pâine de casă 500g", "d": "Produsul vedetă", "now": "3.20", "old": "4.10", "b": "" }
+    ],
+    "sapt": [
+      { "ic": "🧀", "n": "Cașcaval Hochland 300g", "d": "Promoția săptămânii", "now": "18.90", "old": "23.50", "b": "" },
+      { "ic": "🍝", "n": "Paste Barilla 500g", "d": "Cumperi 2, primești puncte duble", "now": "5.49", "old": "6.99", "b": "" },
+      { "ic": "🧴", "n": "Detergent Ariel 1.1L", "d": "Reducere de weekend", "now": "24.90", "old": "32.00", "b": "" },
+      { "ic": "🍫", "n": "Ciocolată Milka 100g", "d": "Toată săptămâna", "now": "4.29", "old": "5.50", "b": "" }
+    ],
+    "app": [
+      { "ic": "🥚", "n": "Ouă M 10 buc", "d": "Doar pentru membri Flana Club", "now": "9.90", "old": "13.20", "b": "app" },
+      { "ic": "🍎", "n": "Mere roșii 1kg", "d": "Exclusiv în aplicație", "now": "3.49", "old": "4.99", "b": "app" },
+      { "ic": "🧃", "n": "Suc Cappy 1L", "d": "Cupon activabil din app", "now": "5.99", "old": "7.49", "b": "app" },
+      { "ic": "🥩", "n": "Ceafă de porc 1kg", "d": "Membri VIP • puncte triple", "now": "26.90", "old": "33.00", "b": "app" }
+    ]
+  },
+  "stores": [
+    { "n": "Flana Aradul Nou", "a": "Str. 6 Vânători 14, Arad", "t": "0257 210 111", "o": "07:00 – 22:00", "lat": 46.1659, "lng": 21.3206 },
+    { "n": "Flana Micălaca", "a": "Bd. Iuliu Maniu 52, Arad", "t": "0257 210 112", "o": "07:00 – 23:00", "lat": 46.1721, "lng": 21.3540 },
+    { "n": "Flana Alfa", "a": "Str. Lucian Blaga 4, Arad", "t": "0257 210 113", "o": "08:00 – 22:00", "lat": 46.1850, "lng": 21.3120 },
+    { "n": "Flana Confecții", "a": "Calea Aurel Vlaicu 120, Arad", "t": "0257 210 114", "o": "07:00 – 21:00", "lat": 46.1773, "lng": 21.3389 },
+    { "n": "Flana Grădiște", "a": "Str. Ogorului 28, Arad", "t": "0257 210 115", "o": "07:30 – 22:00", "lat": 46.1540, "lng": 21.3260 }
+  ]
+}
