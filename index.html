@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#d62828">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Flana Club">
+<title>Flana Club</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<style>
+  :root{
+    --green:#d62828; --green-2:#e63946; --green-dark:#a4161a;
+    --gold:#ffd23f; --blue:#1f4fd6; --bg:#fff5f5; --card:#ffffff; --ink:#2a1414;
+    --muted:#a07474; --line:#f3dede; --red:#c01515; --radius:18px;
+    --shadow:0 6px 22px rgba(164,22,26,.12);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);overscroll-behavior:none;
+    padding-bottom:calc(74px + env(safe-area-inset-bottom));
+  }
+  .app{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
+  /* Header */
+  .topbar{
+    background:linear-gradient(135deg,var(--green) 0%,var(--green-2) 100%);
+    color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 18px;
+    border-bottom-left-radius:24px;border-bottom-right-radius:24px;
+    position:sticky;top:0;z-index:20;
+  }
+  .topbar .row{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:.2px}
+  .brand .logo{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.16);
+    display:grid;place-items:center;font-weight:900;font-size:18px}
+  .brand small{display:block;font-weight:600;font-size:11px;opacity:.85;letter-spacing:.4px}
+  .bell{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.16);
+    display:grid;place-items:center;border:none;color:#fff;font-size:17px;position:relative}
+  .bell .dot{position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--gold);border:2px solid var(--green-2)}
+  /* Screens */
+  .screen{display:none;padding:16px 16px 24px;animation:fade .25s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2.sec{font-size:15px;margin:18px 4px 10px;letter-spacing:.2px}
+  h2.sec:first-child{margin-top:6px}
+  /* Loyalty card */
+  .loyalty{
+    background:linear-gradient(135deg,#a4161a 0%,#d62828 55%,#e63946 100%);
+    color:#fff;border-radius:22px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .loyalty::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07)}
+  .loyalty::before{content:"";position:absolute;left:-30px;bottom:-50px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.06)}
+  .loyalty .lc-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2}
+  .loyalty .tier{font-size:11px;font-weight:700;background:var(--gold);color:#3a2c00;padding:4px 10px;border-radius:20px}
+  .loyalty .pts{font-size:40px;font-weight:800;line-height:1;margin:14px 0 2px;position:relative;z-index:2}
+  .loyalty .pts small{font-size:14px;font-weight:600;opacity:.85}
+  .loyalty .name{font-size:13px;opacity:.9;position:relative;z-index:2}
+  .qrwrap{background:#fff;border-radius:14px;padding:12px;display:grid;place-items:center;margin-top:14px;position:relative;z-index:2}
+  .qrwrap #qrcode{display:grid;place-items:center}
+  .qrwrap .cardno{margin-top:8px;font-size:12px;color:var(--muted);letter-spacing:2px;font-weight:600}
+  .qr-hint{text-align:center;font-size:12px;color:var(--muted);margin:10px 0 2px}
+  /* Progress to voucher */
+  .progress-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-top:14px}
+  .progress-card .pl{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+  .progress-card .pl b{color:var(--green)}
+  .bar{height:10px;background:var(--line);border-radius:20px;overflow:hidden}
+  .bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:20px;transition:width .6s ease}
+  .progress-card .next{font-size:12px;color:var(--muted);margin-top:8px}
+  /* Quick actions */
+  .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .quick button{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 6px;display:grid;gap:6px;justify-items:center;font-size:11.5px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+  .quick .ic{font-size:21px}
+  /* Generic card / list */
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .promo{display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--line);align-items:center}
+  .promo:last-child{border-bottom:none}
+  .promo .thumb{width:56px;height:56px;min-width:56px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;overflow:hidden;flex-shrink:0;background:#fdeaea}
+  .promo .info{flex:1;min-width:0;overflow:hidden}
+  .promo .info h3{margin:0 0 3px;font-size:14.5px}
+  .promo .info p{margin:0;font-size:12px;color:var(--muted)}
+  .promo .price{text-align:right;flex-shrink:0}
+  .promo .price .now{font-weight:800;color:var(--blue);font-size:16px}
+  .promo .price .old{font-size:11px;color:var(--muted);text-decoration:line-through}
+  .badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;margin-top:6px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:top}
+  .badge.app{background:#fff4d6;color:#9a6b00}
+  .badge.store{background:#e7f1ff;color:#1652a8}
+  .badge.hour{background:#ffe7e1;color:#b1351e}
+  /* Tabs */
+  .tabs{display:flex;gap:8px;background:var(--card);padding:5px;border-radius:14px;box-shadow:var(--shadow);margin-bottom:6px}
+  .tabs button{flex:1;border:none;background:transparent;padding:9px 4px;border-radius:10px;font-weight:600;font-size:12.5px;color:var(--muted)}
+  .tabs button.on{background:var(--green);color:#fff}
+  /* Stores */
+  .store{padding:14px;border-bottom:1px solid var(--line)}
+  .store:last-child{border-bottom:none}
+  .store .sh{display:flex;justify-content:space-between;align-items:center}
+  .store h3{margin:0;font-size:15px}
+  .store .open{font-size:11px;font-weight:700;color:#1a8a3f;background:#e6f5ec;padding:3px 9px;border-radius:20px}
+  .store .open.closed{color:var(--red);background:#fdeae6}
+  .store p{margin:6px 0 0;font-size:12.5px;color:var(--muted)}
+  .store .acts{display:flex;gap:8px;margin-top:10px}
+  .store .acts a{flex:1;text-align:center;text-decoration:none;font-size:12.5px;font-weight:600;padding:9px;border-radius:11px;background:#fdeaea;color:var(--green)}
+  /* Vouchers / missions */
+  .voucher{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--line)}
+  .voucher:last-child{border-bottom:none}
+  .voucher .vleft{width:60px;height:60px;border-radius:13px;background:linear-gradient(135deg,var(--green),var(--blue));color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px;text-align:center;line-height:1.1;flex-shrink:0}
+  .voucher .vinfo{flex:1}
+  .voucher .vinfo h3{margin:0 0 2px;font-size:14px}
+  .voucher .vinfo p{margin:0;font-size:12px;color:var(--muted)}
+  .voucher button{border:none;border-radius:11px;padding:9px 14px;font-weight:700;font-size:12.5px;background:var(--gold);color:#3a2c00}
+  .voucher button:disabled{background:var(--line);color:var(--muted)}
+  .mission{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line)}
+  .mission:last-child{border-bottom:none}
+  .mission .mic{width:42px;height:42px;border-radius:11px;background:#fdeaea;display:grid;place-items:center;font-size:20px;flex-shrink:0}
+  .mission .minfo{flex:1}
+  .mission .minfo h3{margin:0 0 4px;font-size:13.5px}
+  .mission .mbar{height:7px;background:var(--line);border-radius:20px;overflow:hidden}
+  .mission .mbar > span{display:block;height:100%;background:var(--green)}
+  .mission .mrew{font-size:11px;font-weight:700;color:var(--green);flex-shrink:0;white-space:nowrap}
+  .mission.done .mic{background:var(--green);}
+  /* Profile */
+  .prof-head{text-align:center;padding:10px 0 4px}
+  .prof-head .av{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));color:#fff;display:grid;place-items:center;font-size:30px;font-weight:800;margin:0 auto 10px}
+  .prof-head h3{margin:0;font-size:18px}
+  .prof-head p{margin:3px 0 0;font-size:13px;color:var(--muted)}
+  .listrow{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--line);font-size:14px}
+  .listrow:last-child{border-bottom:none}
+  .listrow .r{color:var(--muted);font-size:13px}
+  .hist{display:flex;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line);font-size:13px}
+  .hist:last-child{border-bottom:none}
+  .hist .amt{font-weight:700}
+  .hist .amt.plus{color:var(--green)}
+  .hist .amt.minus{color:var(--red)}
+  .hist .d{color:var(--muted);font-size:11.5px}
+  /* Bottom nav */
+  .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#fff;
+    border-top:1px solid var(--line);display:flex;justify-content:space-around;
+    padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:30}
+  .nav button{border:none;background:none;display:grid;gap:3px;justify-items:center;font-size:10.5px;color:var(--muted);font-weight:600;flex:1}
+  .nav button .ic{font-size:21px;line-height:1}
+  .nav button.on{color:var(--green)}
+  /* Buttons */
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;background:var(--green);color:#fff;box-shadow:var(--shadow)}
+  .btn.gold{background:var(--gold);color:#3a2c00}
+  .btn.ghost{background:#fff;color:var(--green);border:1.5px solid var(--green);box-shadow:none}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:var(--muted)}
+  .field input{width:100%;border:1.5px solid var(--line);border-radius:13px;padding:14px;font-size:16px;background:#fff}
+  .field input:focus{outline:none;border-color:var(--green)}
+  /* Onboarding */
+  #onboard{position:fixed;inset:0;background:linear-gradient(160deg,var(--green) 0%,var(--green-dark) 100%);z-index:100;display:none;color:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #onboard .ob-inner{max-width:420px;margin:0 auto;width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:calc(30px + env(safe-area-inset-top)) 24px calc(34px + env(safe-area-inset-bottom))}
+  #onboard .ob-logo{width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:36px;font-weight:900;margin-bottom:20px}
+  #onboard h1{font-size:27px;margin:0 0 6px;font-weight:800}
+  #onboard .sub{opacity:.9;font-size:14.5px;margin-bottom:26px;line-height:1.5}
+  #onboard .perk{display:flex;gap:12px;align-items:center;margin-bottom:14px;font-size:14px}
+  #onboard .perk .pic{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:20px;flex-shrink:0}
+  #onboard .step{display:none}
+  #onboard .step.active{display:block;animation:fade .25s ease}
+  #onboard .field label{color:rgba(255,255,255,.85)}
+  #onboard .field input{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+  #onboard .field input::placeholder{color:rgba(255,255,255,.6)}
+  #onboard .otp{font-size:13px;opacity:.85;margin:-4px 0 14px}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#16251c;color:#fff;padding:13px 18px;border-radius:14px;font-size:13.5px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:200;opacity:0;transition:.3s;max-width:90%;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .pill{display:inline-block;background:#fdeaea;color:var(--green);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+  .note{font-size:11.5px;color:var(--muted);text-align:center;padding:14px 8px;line-height:1.5}
+  /* Banner instalare iOS */
+  .ios-banner{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:300;
+    background:#fff;border:1.5px solid var(--green);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.18);
+    padding:12px 12px 12px 14px;display:none;align-items:center;gap:12px;max-width:480px;margin:0 auto}
+  .ios-banner.show{display:flex;animation:fade .3s ease}
+  .ios-banner .ib-ic{width:40px;height:40px;border-radius:11px;background:var(--green);display:grid;place-items:center;flex-shrink:0}
+  .ios-banner .ib-txt{flex:1;font-size:12.5px;color:var(--ink);line-height:1.45}
+  .ios-banner .ib-txt b{color:var(--green)}
+  .ios-banner .ib-x{border:none;background:#f3dede;color:var(--ink);width:28px;height:28px;border-radius:50%;font-size:14px;flex-shrink:0;line-height:1}
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div id="onboard">
+  <div class="ob-inner">
+    <!-- step 1: welcome -->
+    <div class="step active" data-ob="1">
+      <div class="ob-logo">F</div>
+      <h1>Flana Club</h1>
+      <p class="sub">Cardul tău de fidelitate digital. Strânge puncte la fiecare cumpărătură și transformă-le în vouchere.</p>
+      <div class="perk"><span class="pic">🎁</span><span><b>50 puncte bonus</b> la înscriere</span></div>
+      <div class="perk"><span class="pic">🏷️</span><span>Promoțiile zilei, direct pe telefon</span></div>
+      <div class="perk"><span class="pic">💳</span><span>Card digital — îl scanezi la casă</span></div>
+      <div class="perk"><span class="pic">🎂</span><span><b>100 puncte</b> cadou de ziua ta</span></div>
+      <br>
+      <button class="btn gold" onclick="obNext(2)">Creează cont</button>
+      <div class="note" style="color:rgba(255,255,255,.75)">Demo — datele rămân doar pe acest telefon.</div>
+    </div>
+    <!-- step 2: phone -->
+    <div class="step" data-ob="2">
+      <div class="ob-logo">📱</div>
+      <h1>Numărul tău</h1>
+      <p class="sub">Îți trimitem un cod prin SMS ca să-ți confirmăm contul.</p>
+      <div class="field"><label>Număr de telefon</label><input id="ob-phone" type="tel" inputmode="tel" placeholder="07xx xxx xxx" value="0712 345 678"></div>
+      <button class="btn gold" onclick="obSendOtp()">Trimite codul</button>
+      <button class="btn ghost" style="margin-top:10px" onclick="obNext(1)">Înapoi</button>
+    </div>
+    <!-- step 3: otp -->
+    <div class="step" data-ob="3">
+      <div class="ob-logo">🔑</div>
+      <h1>Cod de confirmare</h1>
+      <p class="otp">Cod trimis (demo): folosește <b id="ob-otpcode">1234</b></p>
+      <div class="field"><label>Cod din SMS</label><input id="ob-otp" type="tel" inputmode="numeric" placeholder="____" maxlength="4"></div>
+      <button class="btn gold" onclick="obVerify()">Confirmă</button>
+      <button class="btn ghost" style="margin-top:10px" onclick="obNext(2)">Înapoi</button>
+    </div>
+    <!-- step 4: profile -->
+    <div class="step" data-ob="4">
+      <div class="ob-logo">👋</div>
+      <h1>Bine ai venit!</h1>
+      <p class="sub">Completează profilul ca să primești oferte relevante și bonusul aniversar.</p>
+      <div class="field"><label>Nume</label><input id="ob-name" type="text" placeholder="Numele tău" value="Maria"></div>
+      <div class="field"><label>Email (opțional)</label><input id="ob-email" type="email" placeholder="email@exemplu.ro"></div>
+      <div class="field"><label>Data nașterii (opțional)</label><input id="ob-bday" type="date"></div>
+      <button class="btn gold" onclick="obFinish()">Activează cardul 🎉</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none">
+  <div class="topbar">
+    <div class="row">
+      <div class="brand">
+        <div class="logo">F</div>
+        <div>Flana Club<small>Magazinele din cartierul tău</small></div>
+      </div>
+      <button class="bell" onclick="toast('Nu ai notificări noi 🔔')">🔔<span class="dot"></span></button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <section class="screen active" id="s-home">
+    <div class="loyalty">
+      <div class="lc-top">
+        <div>
+          <div class="name" id="hi-name">Salut!</div>
+          <div class="pts"><span id="pts-val">0</span> <small>puncte</small></div>
+        </div>
+        <span class="tier" id="tier">Membru</span>
+      </div>
+      <div class="qrwrap">
+        <div id="qrcode"></div>
+        <div class="cardno" id="cardno">FL-0000-0000</div>
+      </div>
+      <div class="name" style="text-align:center;margin-top:8px;opacity:.85;font-size:11.5px;position:relative;z-index:2">Arată codul la casă pentru a acumula puncte</div>
+    </div>
+
+    <div class="progress-card">
+      <div class="pl"><span>Următorul voucher</span><b id="prog-label">—</b></div>
+      <div class="bar"><span id="prog-bar" style="width:0%"></span></div>
+      <div class="next" id="prog-next">—</div>
+    </div>
+
+    <div class="quick">
+      <button onclick="go('promo')"><span class="ic">🏷️</span>Promoțiile zilei</button>
+      <button onclick="go('rewards')"><span class="ic">🎟️</span>Voucherele mele</button>
+      <button onclick="simScan()"><span class="ic">🛒</span>Simulează scanare</button>
+    </div>
+
+    <h2 class="sec">🎯 Misiunile tale</h2>
+    <div class="card" id="missions-home"></div>
+
+    <h2 class="sec">🔥 Astăzi la reducere</h2>
+    <div class="card" id="promo-home"></div>
+    <button class="btn ghost" style="margin-top:12px" onclick="go('promo')">Vezi toate promoțiile</button>
+  </section>
+
+  <!-- PROMO -->
+  <section class="screen" id="s-promo">
+    <h2 class="sec" style="margin-top:2px">Promoții</h2>
+    <div class="tabs">
+      <button class="on" data-pt="azi" onclick="promoTab('azi')">Azi</button>
+      <button data-pt="sapt" onclick="promoTab('sapt')">Săptămâna</button>
+      <button data-pt="app" onclick="promoTab('app')">Exclusiv în app</button>
+    </div>
+    <div class="card" id="promo-list"></div>
+    <div class="note">Promoțiile sunt orientative (demo). În producție vin din panoul de administrare, per magazin.</div>
+  </section>
+
+  <!-- MAP / STORES -->
+  <section class="screen" id="s-map">
+    <h2 class="sec" style="margin-top:2px">Magazine Flana — Arad</h2>
+    <div class="card" id="store-list"></div>
+    <div class="note">Locațiile sunt exemple pentru demo. „Direcții" deschide Google Maps.</div>
+  </section>
+
+  <!-- REWARDS -->
+  <section class="screen" id="s-rewards">
+    <h2 class="sec" style="margin-top:2px">🎟️ Vouchere disponibile</h2>
+    <div class="card" id="voucher-list"></div>
+    <h2 class="sec">🎯 Misiuni active</h2>
+    <div class="card" id="missions-list"></div>
+    <h2 class="sec">🎡 Roata recompenselor</h2>
+    <div class="card" style="padding:16px;text-align:center">
+      <p style="margin:0 0 12px;font-size:13px;color:var(--muted)">După fiecare 3 cumpărături primești o învârtire gratuită.</p>
+      <div id="wheel-emoji" style="font-size:46px;margin-bottom:10px">🎡</div>
+      <button class="btn gold" id="wheel-btn" onclick="spinWheel()">Învârte roata</button>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section class="screen" id="s-profile">
+    <div class="prof-head">
+      <div class="av" id="pf-av">M</div>
+      <h3 id="pf-name">Membru Flana</h3>
+      <p id="pf-phone">—</p>
+      <span class="pill" id="pf-tier">Membru</span>
+    </div>
+    <h2 class="sec">Istoric puncte</h2>
+    <div class="card" id="history-list"></div>
+    <h2 class="sec">Detalii cont</h2>
+    <div class="card" id="account-info"></div>
+    <h2 class="sec">Program & reguli</h2>
+    <div class="card">
+      <div class="listrow" onclick="showRules()"><span>📋 Regulamentul programului</span><span class="r">›</span></div>
+      <div class="listrow"><span>🔔 Notificări</span><span class="r">Activate</span></div>
+      <div class="listrow"><span>📊 1 leu = 1 punct</span><span class="r">150p = 7 lei</span></div>
+    </div>
+    <button class="btn ghost" style="margin-top:16px" onclick="resetDemo()">Resetează demo</button>
+    <div class="note">Flana Club — versiune demo (MVP / PWA). v1.0</div>
+  </section>
+
+  <nav class="nav">
+    <button class="on" data-nav="home" onclick="go('home')"><span class="ic">🏠</span>Acasă</button>
+    <button data-nav="promo" onclick="go('promo')"><span class="ic">🏷️</span>Promoții</button>
+    <button data-nav="map" onclick="go('map')"><span class="ic">📍</span>Magazine</button>
+    <button data-nav="rewards" onclick="go('rewards')"><span class="ic">🎟️</span>Recompense</button>
+    <button data-nav="profile" onclick="go('profile')"><span class="ic">👤</span>Profil</button>
+  </nav>
+</div>
+
+<!-- Banner instalare pentru iPhone (apare doar pe iOS Safari, neinstalat) -->
+<div class="ios-banner" id="iosBanner">
+  <div class="ib-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg></div>
+  <div class="ib-txt">Instalează <b>Flana Club</b> pe iPhone: apasă <b>Partajează</b> (pătratul cu săgeată ↑, jos în Safari), apoi <b>Adaugă pe ecranul principal</b>.</div>
+  <button class="ib-x" onclick="dismissIos()" aria-label="Închide">✕</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DATE & STARE ============ */
+let VOUCHERS = [
+  {id:'v7', cost:150, value:'7 lei', emoji:'7'},
+  {id:'v15', cost:300, value:'15 lei', emoji:'15'},
+  {id:'v30', cost:500, value:'30 lei', emoji:'30'}
+];
+
+// Setări program (editabile din panoul de administrare)
+let SETTINGS = { welcomeBonus:50, profileBonus:30, pointsPerLeu:1 };
+
+let PROMOS = {
+  azi:[
+    {ic:'🥛',n:'Lapte Zuzu 1.5% 1L',d:'Oferta zilei • toate magazinele',now:'4.99',old:'6.49',b:''},
+    {ic:'🍗',n:'Piept de pui 1kg',d:'Doar azi • stoc limitat',now:'21.90',old:'27.50',b:''},
+    {ic:'☕',n:'Cafea Jacobs 250g',d:'Happy Hour 13:00–16:00 • puncte duble',now:'17.49',old:'21.99',b:'hour'},
+    {ic:'🍞',n:'Pâine de casă 500g',d:'Produsul vedetă',now:'3.20',old:'4.10',b:''}
+  ],
+  sapt:[
+    {ic:'🧀',n:'Cașcaval Hochland 300g',d:'Promoția săptămânii',now:'18.90',old:'23.50',b:''},
+    {ic:'🍝',n:'Paste Barilla 500g',d:'Cumperi 2, primești puncte duble',now:'5.49',old:'6.99',b:''},
+    {ic:'🧴',n:'Detergent Ariel 1.1L',d:'Reducere de weekend',now:'24.90',old:'32.00',b:''},
+    {ic:'🍫',n:'Ciocolată Milka 100g',d:'Toată săptămâna',now:'4.29',old:'5.50',b:''}
+  ],
+  app:[
+    {ic:'🥚',n:'Ouă M 10 buc',d:'Doar pentru membri Flana Club',now:'9.90',old:'13.20',b:'app'},
+    {ic:'🍎',n:'Mere roșii 1kg',d:'Exclusiv în aplicație',now:'3.49',old:'4.99',b:'app'},
+    {ic:'🧃',n:'Suc Cappy 1L',d:'Cupon activabil din app',now:'5.99',old:'7.49',b:'app'},
+    {ic:'🥩',n:'Ceafă de porc 1kg',d:'Membri VIP • puncte triple',now:'26.90',old:'33.00',b:'app'}
+  ]
+};
+
+let STORES = [
+  {n:'Flana Aradul Nou',a:'Str. 6 Vânători 14, Arad',t:'0257 210 111',o:'07:00 – 22:00',lat:46.1659,lng:21.3206},
+  {n:'Flana Micălaca',a:'Bd. Iuliu Maniu 52, Arad',t:'0257 210 112',o:'07:00 – 23:00',lat:46.1721,lng:21.3540},
+  {n:'Flana Alfa',a:'Str. Lucian Blaga 4, Arad',t:'0257 210 113',o:'08:00 – 22:00',lat:46.1850,lng:21.3120},
+  {n:'Flana Confecții',a:'Calea Aurel Vlaicu 120, Arad',t:'0257 210 114',o:'07:00 – 21:00',lat:46.1773,lng:21.3389},
+  {n:'Flana Grădiște',a:'Str. Ogorului 28, Arad',t:'0257 210 115',o:'07:30 – 22:00',lat:46.1540,lng:21.3260}
+];
+
+const MISSIONS = [
+  {id:'m1',ic:'🛒',n:'Cumpără de 3 ori în 7 zile',goal:3,rew:'+60p'},
+  {id:'m2',ic:'🗂️',n:'Cumpără din 3 categorii diferite',goal:3,rew:'+40p'},
+  {id:'m3',ic:'📲',n:'Completează profilul',goal:1,rew:'+30p'}
+];
+
+const DEFAULT_STATE = {
+  registered:false, name:'', phone:'', email:'', bday:'',
+  points:0, cardno:'', history:[],
+  missions:{m1:0,m2:0,m3:0}, purchases:0, spins:0,
+  redeemed:[]
+};
+let S = load();
+
+function load(){
+  try{ const r = localStorage.getItem('flanaClub'); if(r) return JSON.parse(r); }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+function save(){ try{ localStorage.setItem('flanaClub', JSON.stringify(S)); }catch(e){} }
+
+/* ============ ONBOARDING ============ */
+function obStep(n){ document.querySelectorAll('#onboard .step').forEach(s=>s.classList.toggle('active', s.dataset.ob==String(n))); }
+function obNext(n){ obStep(n); }
+function obSendOtp(){
+  const p = document.getElementById('ob-phone').value.trim();
+  if(p.replace(/\D/g,'').length < 9){ toast('Introdu un număr valid'); return; }
+  S.phone = p; obNext(3);
+}
+function obVerify(){
+  const v = document.getElementById('ob-otp').value.trim();
+  if(v !== '1234'){ toast('Cod greșit. Folosește 1234 (demo)'); return; }
+  obNext(4);
+}
+function obFinish(){
+  S.name = document.getElementById('ob-name').value.trim() || 'Membru';
+  S.email = document.getElementById('ob-email').value.trim();
+  S.bday = document.getElementById('ob-bday').value;
+  S.registered = true;
+  S.cardno = 'FL-' + Math.floor(1000+Math.random()*9000) + '-' + Math.floor(1000+Math.random()*9000);
+  // bonus de bun venit
+  addPoints(SETTINGS.welcomeBonus, 'Bonus de bun venit 🎁', true);
+  if(S.email || S.bday){ S.missions.m3 = 1; addPoints(SETTINGS.profileBonus,'Profil completat 📲', true); }
+  save();
+  startApp();
+}
+
+/* ============ PUNCTE ============ */
+function addPoints(n, reason, silent){
+  S.points += n;
+  S.history.unshift({n:n, reason:reason, t:Date.now()});
+  if(S.history.length>40) S.history.pop();
+  save();
+  if(!silent) toast('Ai primit ' + n + ' puncte! ' + reason);
+  renderAll();
+}
+function spendPoints(n, reason){
+  S.points -= n;
+  S.history.unshift({n:-n, reason:reason, t:Date.now()});
+  save(); renderAll();
+}
+
+function simScan(){
+  // simulează un bon la casă: 20–60 lei => 20–60 puncte
+  const lei = Math.floor(20 + Math.random()*45);
+  S.purchases++;
+  // misiuni
+  if(S.missions.m1 < 3) S.missions.m1++;
+  if(S.missions.m2 < 3) S.missions.m2++;
+  let bonus = '';
+  const h = new Date().getHours();
+  let earned = Math.round(lei * SETTINGS.pointsPerLeu);
+  if(h>=13 && h<16){ earned = earned*2; bonus = ' (Happy Hour ×2!)'; }
+  addPoints(earned, 'Cumpărătură ' + lei + ' lei' + bonus);
+  // mission completion rewards
+  checkMissions();
+}
+function checkMissions(){
+  if(S.missions.m1===3 && !S.redeemed.includes('m1done')){ S.redeemed.push('m1done'); addPoints(60,'Misiune: 3 cumpărături ✅'); }
+  if(S.missions.m2===3 && !S.redeemed.includes('m2done')){ S.redeemed.push('m2done'); addPoints(40,'Misiune: 3 categorii ✅'); }
+}
+
+function redeem(v){
+  if(S.points < v.cost){ toast('Îți mai trebuie ' + (v.cost-S.points) + ' puncte'); return; }
+  spendPoints(v.cost, 'Voucher ' + v.value + ' activat 🎟️');
+  toast('Voucher de ' + v.value + ' activat! Arată-l la casă.');
+}
+
+function spinWheel(){
+  const free = Math.floor(S.purchases/3) - S.spins;
+  if(free < 1){ toast('Mai fă ' + (3-(S.purchases%3)) + ' cumpărături pentru o învârtire'); return; }
+  S.spins++;
+  const prizes=[{e:'🎟️',t:'Voucher 5 lei',p:50},{e:'⭐',t:'25 puncte bonus',p:25},{e:'🥤',t:'Suc gratuit',p:0},{e:'☕',t:'Cafea -50%',p:0},{e:'🎉',t:'100 puncte!',p:100}];
+  const win = prizes[Math.floor(Math.random()*prizes.length)];
+  const el = document.getElementById('wheel-emoji');
+  let i=0; const iv=setInterval(()=>{ el.textContent = prizes[i%prizes.length].e; i++; },80);
+  setTimeout(()=>{ clearInterval(iv); el.textContent=win.e;
+    if(win.p>0) addPoints(win.p,'Roata recompenselor 🎡'); else { toast('Ai câștigat: '+win.t+'!'); }
+    save(); renderRewards();
+  }, 1400);
+}
+
+/* ============ NAVIGARE ============ */
+function go(scr){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+scr).classList.add('active');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on', b.dataset.nav===scr));
+  window.scrollTo(0,0);
+}
+
+/* ============ RENDARE ============ */
+function tierOf(p){ if(p>=500) return 'VIP'; if(p>=200) return 'Gold'; return 'Membru'; }
+
+/* ---- Încărcare neblocantă a bibliotecii QR (2 surse) + randare robustă ----
+   Astfel pagina se deschide pe orice telefon (iPhone/Android), chiar dacă
+   rețeaua e lentă; codul QR apare imediat ce biblioteca s-a încărcat. */
+var __qrLoading = false;
+function loadQRLib(){
+  if (typeof QRCode !== 'undefined' || __qrLoading) return;
+  __qrLoading = true;
+  function inject(src, onerr){
+    var s = document.createElement('script');
+    s.async = true; s.src = src;
+    s.onload = function(){ if (typeof drawQR === 'function') drawQR(); };
+    s.onerror = onerr;
+    document.head.appendChild(s);
+  }
+  inject('https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js', function(){
+    inject('https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js', function(){ /* offline: app rămâne funcțională */ });
+  });
+}
+function drawQR(){
+  var qrEl = document.getElementById('qrcode');
+  if (!qrEl) return;
+  var data = 'FLANA:' + (S.cardno || '0000') + ':' + (S.phone || '');
+  if (typeof QRCode === 'undefined'){
+    qrEl.innerHTML = '<div style="width:150px;height:150px;display:grid;place-items:center;color:#a07474;font-size:12px;text-align:center">Se încarcă<br>codul…</div>';
+    loadQRLib();
+    return;
+  }
+  qrEl.innerHTML = '';
+  try{
+    new QRCode(qrEl, { text:data, width:150, height:150, colorDark:'#a4161a', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  }catch(e){ qrEl.textContent = '[QR]'; }
+}
+
+function renderCard(){
+  document.getElementById('pts-val').textContent = S.points;
+  document.getElementById('hi-name').textContent = 'Salut, ' + (S.name||'membru') + '!';
+  document.getElementById('cardno').textContent = S.cardno || 'FL-0000-0000';
+  document.getElementById('tier').textContent = tierOf(S.points);
+  // QR (randare neblocantă - merge și dacă biblioteca încă se încarcă)
+  drawQR();
+  // progress to next voucher
+  const next = VOUCHERS.find(v=>v.cost>S.points) || VOUCHERS[VOUCHERS.length-1];
+  const prevCost = VOUCHERS.filter(v=>v.cost<=S.points).map(v=>v.cost).pop() || 0;
+  const pct = Math.min(100, Math.round(((S.points-prevCost)/(next.cost-prevCost))*100));
+  document.getElementById('prog-label').textContent = next.value;
+  document.getElementById('prog-bar').style.width = (S.points>=next.cost?100:pct) + '%';
+  const diff = next.cost - S.points;
+  document.getElementById('prog-next').textContent = diff>0 ? ('Îți mai trebuie ' + diff + ' puncte pentru voucherul de ' + next.value) : 'Poți activa voucherul de ' + next.value + '!';
+}
+
+function promoRow(p){
+  const badge = p.b==='hour'?'<span class="badge hour">Happy Hour</span>':'';
+  return `<div class="promo"><div class="thumb">${p.ic}</div>
+    <div class="info"><h3>${p.n}</h3><p>${p.d}</p>${badge}</div>
+    <div class="price"><div class="now">${p.now}</div><div class="old">${p.old} lei</div></div></div>`;
+}
+function renderPromosHome(){
+  document.getElementById('promo-home').innerHTML = PROMOS.azi.slice(0,3).map(promoRow).join('');
+}
+let curTab='azi';
+function promoTab(t){ curTab=t; document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.pt===t)); renderPromoList(); }
+function renderPromoList(){ document.getElementById('promo-list').innerHTML = PROMOS[curTab].map(promoRow).join(''); }
+
+function isOpen(o){
+  const [a,b]=o.split('–').map(s=>parseInt(s.trim()));
+  const h=new Date().getHours(); return h>=a && h<b;
+}
+function renderStores(){
+  document.getElementById('store-list').innerHTML = STORES.map(s=>{
+    const op=isOpen(s.o);
+    const maps=`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}`;
+    return `<div class="store"><div class="sh"><h3>${s.n}</h3><span class="open ${op?'':'closed'}">${op?'Deschis':'Închis'}</span></div>
+      <p>📍 ${s.a}</p><p>🕒 ${s.o} &nbsp;•&nbsp; ☎ ${s.t}</p>
+      <div class="acts"><a href="${maps}" target="_blank" rel="noopener">🧭 Direcții</a><a href="tel:${s.t.replace(/\s/g,'')}">📞 Sună</a></div></div>`;
+  }).join('');
+}
+
+function renderVouchers(){
+  document.getElementById('voucher-list').innerHTML = VOUCHERS.map(v=>{
+    const ok=S.points>=v.cost;
+    return `<div class="voucher"><div class="vleft">${v.value}</div>
+      <div class="vinfo"><h3>Voucher ${v.value}</h3><p>${v.cost} puncte</p></div>
+      <button ${ok?'':'disabled'} onclick='redeem(${JSON.stringify(v)})'>${ok?'Activează':'Blocat'}</button></div>`;
+  }).join('');
+}
+function missionRow(m){
+  const prog=S.missions[m.id]||0; const done=prog>=m.goal;
+  return `<div class="mission ${done?'done':''}"><div class="mic">${done?'✅':m.ic}</div>
+    <div class="minfo"><h3>${m.n}</h3><div class="mbar"><span style="width:${Math.min(100,prog/m.goal*100)}%"></span></div></div>
+    <div class="mrew">${m.rew}</div></div>`;
+}
+function renderMissions(){
+  const html=MISSIONS.map(missionRow).join('');
+  document.getElementById('missions-list').innerHTML=html;
+  document.getElementById('missions-home').innerHTML=MISSIONS.slice(0,2).map(missionRow).join('');
+}
+function renderRewards(){ renderVouchers(); renderMissions();
+  const free=Math.floor(S.purchases/3)-S.spins;
+  document.getElementById('wheel-btn').textContent = free>0?('Învârte roata ('+free+' gratuite)'):'Învârte roata';
+}
+
+function renderProfile(){
+  document.getElementById('pf-av').textContent=(S.name||'M').charAt(0).toUpperCase();
+  document.getElementById('pf-name').textContent=S.name||'Membru Flana';
+  document.getElementById('pf-phone').textContent=S.phone||'—';
+  document.getElementById('pf-tier').textContent='Nivel: '+tierOf(S.points);
+  document.getElementById('history-list').innerHTML = S.history.length? S.history.slice(0,12).map(h=>{
+    const d=new Date(h.t); const ds=d.toLocaleDateString('ro-RO',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="hist"><div><div>${h.reason}</div><div class="d">${ds}</div></div><div class="amt ${h.n>=0?'plus':'minus'}">${h.n>=0?'+':''}${h.n}p</div></div>`;
+  }).join('') : '<div class="note">Încă nu ai activitate. Simulează o scanare pe ecranul Acasă.</div>';
+  document.getElementById('account-info').innerHTML =
+    `<div class="listrow"><span>Card</span><span class="r">${S.cardno}</span></div>
+     <div class="listrow"><span>Telefon</span><span class="r">${S.phone||'—'}</span></div>
+     <div class="listrow"><span>Email</span><span class="r">${S.email||'—'}</span></div>
+     <div class="listrow"><span>Total cumpărături</span><span class="r">${S.purchases}</span></div>`;
+}
+
+function renderAll(){ renderCard(); renderPromosHome(); renderPromoList(); renderStores(); renderRewards(); renderProfile(); }
+
+/* ============ UTIL ============ */
+let toastT;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('show');},2600); }
+function showRules(){ toast('1 leu = 1 punct. Punctele expiră în 12 luni. Vouchere: 150p=7lei, 300p=15lei, 500p=30lei.'); }
+function resetDemo(){ if(confirm('Resetezi tot demo-ul?')){ localStorage.removeItem('flanaClub'); location.reload(); } }
+
+function startApp(){
+  document.getElementById('onboard').style.display='none';
+  document.getElementById('app').style.display='block';
+  renderAll(); go('home');
+}
+
+/* ============ CONFIG din panoul de administrare ============ */
+async function loadConfig(){
+  try{
+    const r = await fetch('config.json', {cache:'no-store'});
+    if(!r.ok) return;
+    const c = await r.json();
+    if(c.promos)   PROMOS = c.promos;
+    if(c.stores)   STORES = c.stores;
+    if(c.vouchers) VOUCHERS = c.vouchers;
+    if(c.settings) SETTINGS = Object.assign(SETTINGS, c.settings);
+  }catch(e){ /* fara config.json -> valori implicite */ }
+}
+
+/* ============ Banner instalare iOS ============ */
+function dismissIos(){ var b=document.getElementById('iosBanner'); if(b) b.classList.remove('show'); try{ localStorage.setItem('flanaIosDismiss','1'); }catch(e){} }
+function maybeShowIos(){
+  try{
+    var ua = navigator.userAgent || '';
+    var isIOS = /iphone|ipad|ipod/i.test(ua);
+    var standalone = (window.navigator && window.navigator.standalone===true) ||
+                     (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    var dismissed = false; try{ dismissed = localStorage.getItem('flanaIosDismiss')==='1'; }catch(e){}
+    if(isIOS && !standalone && !dismissed){
+      var b = document.getElementById('iosBanner');
+      if(b) setTimeout(function(){ b.classList.add('show'); }, 1500);
+    }
+  }catch(e){}
+}
+
+/* ============ INIT ============ */
+(async function init(){
+  loadQRLib(); // pornește descărcarea bibliotecii QR în fundal (neblocant)
+  try{ await Promise.race([ loadConfig(), new Promise(function(res){ setTimeout(res, 3000); }) ]); }catch(e){}
+  var otp=document.getElementById('ob-otpcode'); if(otp) otp.textContent='1234';
+  if(S.registered){ startApp(); }
+  else { document.getElementById('onboard').style.display='block'; }
+  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
+  maybeShowIos();
+})();
+</script>
+</body>
+</html>
